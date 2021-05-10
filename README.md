@@ -5,10 +5,10 @@ Run many services with one command.
 ## Examples
 
 ```json
+# some_config.json
 [
   {
     "name": "ping",
-    "path": "",
     "entrypoint": {
       "exec": "ping",
       "args": ["8.8.8.8"]
@@ -16,7 +16,6 @@ Run many services with one command.
   },
   {
     "name": "check files",
-    "path": "",
     "entrypoint": {
       "exec": "ls",
       "args": ["-la"]
@@ -33,12 +32,11 @@ $ app-compose run some_config.json
 
 - Go 1.16
 
-## Installation
+## Build from source
 
-We using go modules and get always the last version
-
-```
-$ go get github.com/edermanoel94/app-compose@latest
+```sh
+$ git clone https://github.com/edermanoel94/app-compose
+$ go install
 ```
 
 # TODO List
