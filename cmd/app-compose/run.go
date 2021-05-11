@@ -18,8 +18,6 @@ package cmd
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
-	"sync"
 
 	"github.com/edermanoel94/app-compose/internal/manager"
 	"github.com/spf13/cobra"
@@ -45,33 +43,15 @@ var runCmd = &cobra.Command{
 			return err
 		}
 
-		chErr := make(chan error)
-
-		go func() {
-			err := <-chErr
-			log.Fatal(err)
-		}()
-
-		wg := sync.WaitGroup{}
-
 		for _, service := range services {
 
-			wg.Add(1)
-			go func(s manager.Service) {
+			err := service.Execute()
 
-				defer wg.Done()
+			if err != nil {
+				return err
+			}
 
-				err := s.Execute()
-
-				if err != nil {
-					chErr <- err
-					return
-				}
-
-			}(service)
 		}
-
-		wg.Wait()
 
 		return nil
 	},
