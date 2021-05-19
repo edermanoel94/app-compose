@@ -2,6 +2,7 @@
 package manager
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -31,7 +32,9 @@ func (s *Service) AddDependent(dependent *Service) error {
 	return nil
 }
 
-func (s *Service) Execute() error {
+func (s *Service) Execute(ctx context.Context) error {
+
+	var dir string
 
 	if s.Path != "" {
 
@@ -48,14 +51,22 @@ func (s *Service) Execute() error {
 		if err := os.Chdir(s.Path); err != nil {
 			return err
 		}
+
+		dir = s.Path
 	}
 
-	cmd := exec.Command(s.Entrypoint.Exec, s.Entrypoint.Args...)
+	cmd := exec.CommandContext(ctx, s.Entrypoint.Exec, s.Entrypoint.Args...)
 
-	fmt.Println(cmd.String())
+	cmd.Dir = dir
 
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	fmt.Println(cmd.Process.Pid)
+
+	return nil
 }
